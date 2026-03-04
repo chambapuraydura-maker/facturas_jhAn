@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Cliente {
+  id        String    @id @default(uuid())
+  nombre    String
+  nif       String?
+  email     String?
+  telefono  String?
+  direccion String?
+  cp        String?
+  ciudad    String?
+  notas     String?
+  createdAt DateTime  @default(now())
+  facturas  Factura[]
+}
+
+model Empresa {
+  id        String    @id @default(uuid())
+  nombre    String
+  ruc       String    @unique
+  email     String?
+  telefono  String?
+  direccion String?
+  cp        String?
+  ciudad    String?
+  web       String?
+  banco     String?
+  iban      String?
+  irpf      Int       @default(15)
+  prefijo   String?
+  createdAt DateTime  @default(now())
+  facturas  Factura[]
+}
+
+model Categoria {
+  id        String     @id @default(uuid())
+  nombre    String     @unique
+  tipo      TipoMenu
+  createdAt DateTime   @default(now())
+  items     MenuItem[]
+}
+
+enum TipoMenu {
+  COMIDA
+  BEBIDA
+}
+
+model MenuItem {
+  id           String        @id @default(uuid())
+  nombre       String
+  precio       Float
+  categoriaId  String
+  categoria    Categoria     @relation(fields: [categoriaId], references: [id])
+  disponible   Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  facturaItems FacturaItem[]
+}
+
+enum EstadoFactura {
+  borrador
+  pendiente
+  pagada
+}
+
+model Factura {
+  id             String        @id @default(uuid())
+  numero         Int           @unique @default(autoincrement())
+  estado         EstadoFactura @default(borrador)
+  clienteId      String?
+  empresaId      String?
+  cliente        Cliente?      @relation(fields: [clienteId], references: [id])
+  empresa        Empresa?      @relation(fields: [empresaId], references: [id])
+  items          FacturaItem[]
+
+  // Fiscales España
+  baseComida     Float         @default(0)
+  baseBebida     Float         @default(0)
+  baseImponible  Float         @default(0)
+  ivaComida      Float         @default(0)  // 10%
+  ivaBebida      Float         @default(0)  // 21%
+  totalIva       Float         @default(0)
+  irpf           Float         @default(0)  // importe descontado
+  irpfPct        Int           @default(0)  // porcentaje aplicado
+  total          Float         @default(0)
+
+  // Fechas y notas
+  fechaEmision   DateTime?
+  fechaVence     DateTime?
+  notas          String?
+
+  createdAt      DateTime      @default(now())
+}
+
+model FacturaItem {
+  id          String   @id @default(uuid())
+  facturaId   String
+  menuItemId  String?
+  descripcion String
+  tipo        TipoMenu
+  cantidad    Int
+  precio      Float
+  factura     Factura  @relation(fields: [facturaId], references: [id])
+  menuItem    MenuItem? @relation(fields: [menuItemId], references: [id])
+}

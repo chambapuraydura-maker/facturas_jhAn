@@ -1,0 +1,46 @@
+{
+  "name": "facturas_jhan",
+  "version": "1.0.0",
+  "description": "",
+  "main": "electron-entry.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "tsc src/preload/preload.ts --outDir dist --module commonjs --target es2020 --esModuleInterop && electronmon .",
+    "build": "tsc",
+    "test:dev": "tsx scripts/test.ts"
+  },
+  "electronmon": {
+    "patterns": [
+      "src/**/*"
+    ],
+    "runner": "node",
+    "runnerArgs": [
+      "--require",
+      "tsx/cjs"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chambapuraydura-maker/facturas_jhAn.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chambapuraydura-maker/facturas_jhAn/issues"
+  },
+  "homepage": "https://github.com/chambapuraydura-maker/facturas_jhAn#readme",
+  "dependencies": {
+    "@prisma/client": "^6.19.2",
+    "electron": "^40.6.1",
+    "prisma": "^6.19.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.3",
+    "electron-builder": "^26.8.1",
+    "electronmon": "^2.0.4",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
