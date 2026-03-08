@@ -10,12 +10,12 @@ datasource db {
 model Cliente {
   id        String    @id @default(uuid())
   nombre    String
-  nif       String?
+  nif       String
   email     String?
-  telefono  String?
-  direccion String?
-  cp        String?
-  ciudad    String?
+  telefono  String
+  direccion String
+  cp        String
+  ciudad    String
   notas     String?
   createdAt DateTime  @default(now())
   facturas  Factura[]
@@ -92,7 +92,6 @@ model Factura {
 
   // Fechas y notas
   fechaEmision   DateTime?
-  fechaVence     DateTime?
   notas          String?
 
   createdAt      DateTime      @default(now())

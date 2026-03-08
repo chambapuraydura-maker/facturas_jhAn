@@ -30,5 +30,7 @@ contextBridge.exposeInMainWorld('api', {
         getAll: () => ipcRenderer.invoke('facturas:getAll'),
         getById: (id: string) => ipcRenderer.invoke('facturas:getById', id),
         create: (data: any) => ipcRenderer.invoke('facturas:create', data),
+        update: (id: string, data: any) => ipcRenderer.invoke('facturas:update', id, data),
+        delete: (id: string) => ipcRenderer.invoke('facturas:delete', id),
     },
 });

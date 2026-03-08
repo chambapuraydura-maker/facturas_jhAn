@@ -134,6 +134,8 @@ function openInvoice(id) {
   if (!inv) return;
 
   const esBorrador = inv.estado === 'borrador';
+  const esPendiente = inv.estado === 'pendiente';
+  const esPagada    = inv.estado === 'pagada';
 
   document.getElementById('emptyInv').style.display   = 'none';
   document.getElementById('editorWrap').style.display = '';
@@ -147,13 +149,14 @@ function openInvoice(id) {
     banner.innerHTML = '🔒 Factura emitida — solo lectura. Duplica para crear una nueva basada en esta.';
     document.getElementById('editorWrap').prepend(banner);
   }
-  banner.style.display = esBorrador ? 'none' : 'flex';
+  banner.style.display = esPagada ? 'none' : 'flex';
 
   // Toolbar
   document.getElementById('statusSel').value    = inv.estado;
-  document.getElementById('statusSel').disabled = !esBorrador;
+  document.getElementById('statusSel').disabled = esPagada;
+
   const btnDel = document.querySelector('[onclick="delInvoice()"]');
-  if (btnDel) btnDel.style.display = esBorrador ? '' : 'none';
+  if (btnDel) btnDel.style.display = esPagada ? 'none' : '';
 
   // Número
   document.getElementById('pNum').textContent = String(inv.numero).padStart(4, '0');
@@ -176,8 +179,7 @@ function openInvoice(id) {
   }
 
   // Fechas
-  document.getElementById('issueDate').value = inv.fechaEmision ? inv.fechaEmision.slice(0,10) : today();
-  document.getElementById('dueDate').value   = inv.fechaVence   ? inv.fechaVence.slice(0,10)   : '';
+  document.getElementById('issueDate').value = inv.fechaEmision ? new Date(inv.fechaEmision).toISOString().slice(0,10) : today();
 
   // Notas
   document.getElementById('invNotes').value = inv.notas || '';
@@ -201,7 +203,7 @@ function openInvoice(id) {
   if (esBorrador) recalc();
 
   // Bloquear UI si no es borrador
-  setInvoiceLocked(!esBorrador);
+  setInvoiceLocked(esPagada);
   renderInvList();
 }
 
@@ -268,7 +270,6 @@ async function saveCurrentInvoice() {
   const items  = collectRows();
   const data   = {
     fechaEmision: document.getElementById('issueDate').value || null,
-    fechaVence:   document.getElementById('dueDate').value   || null,
     notas:        document.getElementById('invNotes').value  || null,
     clienteId:    inv.clienteId || null,
     items,
@@ -318,36 +319,28 @@ function collectTotals() {
 async function updateStatus() {
   const nuevoEstado = document.getElementById('statusSel').value;
   const inv = invoices.find(i => i.id === currentInvoiceId);
-  if (!inv || inv.estado !== 'borrador') return;
+  if (!inv) return;
 
-  openConfirm(
-    '¿Emitir factura?',
-    'Una vez emitida no podrás modificarla ni eliminarla. ¿Continuar?',
-    async () => {
-      const totals = collectTotals();
-      const items  = collectRows();
-      const data   = {
-        estado:       nuevoEstado,
-        fechaEmision: document.getElementById('issueDate').value || today(),
-        fechaVence:   document.getElementById('dueDate').value   || null,
-        notas:        document.getElementById('invNotes').value  || null,
-        clienteId:    inv.clienteId || null,
-        items,
-        ...totals,
-      };
-      try {
-        const updated = await window.api.facturas.update(currentInvoiceId, data);
-        const idx = invoices.findIndex(i => i.id === currentInvoiceId);
-        if (idx !== -1) invoices[idx] = { ...invoices[idx], ...updated };
-        openInvoice(currentInvoiceId);
-        showToast('✅ Factura emitida y bloqueada');
-      } catch (err) {
-        showToast('❌ Error al emitir factura', true);
-      }
-    }
-  );
-  // Revertir select hasta confirmar
-  document.getElementById('statusSel').value = 'borrador';
+  const orden = { borrador: 0, pendiente: 1, pagada: 2 };
+  const labels = { borrador: '📝 Borrador', pendiente: '⏳ Pendiente de cobro', pagada: '✅ Pagada' };
+
+  // No permitir bajar de estado
+  if (orden[nuevoEstado] < orden[inv.estado]) {
+    showToast('⛔ No puedes bajar el estado de una factura', true);
+    document.getElementById('statusSel').value = inv.estado; // revertir
+    return;
+  }
+  try {
+    const updated = await window.api.facturas.update(currentInvoiceId, { estado: nuevoEstado });
+    const idx = invoices.findIndex(i => i.id === currentInvoiceId);
+    if (idx !== -1) invoices[idx] = { ...invoices[idx], ...updated };
+    renderInvList();
+    openInvoice(currentInvoiceId);
+    showToast(`Estado cambiado a: ${labels[nuevoEstado]}`);
+  } catch (err) {
+    showToast('❌ Error al cambiar estado', true);
+    document.getElementById('statusSel').value = inv.estado; // revertir si falla
+  }
 }
 
 /* ── ELIMINAR (solo borradores) ── */

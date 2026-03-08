@@ -31,5 +31,7 @@ electron_1.contextBridge.exposeInMainWorld('api', {
         getAll: () => electron_1.ipcRenderer.invoke('facturas:getAll'),
         getById: (id) => electron_1.ipcRenderer.invoke('facturas:getById', id),
         create: (data) => electron_1.ipcRenderer.invoke('facturas:create', data),
+        update: (id, data) => electron_1.ipcRenderer.invoke('facturas:update', id, data),
+        delete: (id) => electron_1.ipcRenderer.invoke('facturas:delete', id),
     },
 });
