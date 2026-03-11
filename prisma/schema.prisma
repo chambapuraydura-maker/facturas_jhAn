@@ -26,10 +26,10 @@ model Empresa {
   nombre    String
   ruc       String    @unique
   email     String?
-  telefono  String?
-  direccion String?
-  cp        String?
-  ciudad    String?
+  telefono  String
+  direccion String
+  cp        String
+  ciudad    String
   web       String?
   banco     String?
   iban      String?
@@ -95,6 +95,15 @@ model Factura {
   notas          String?
 
   createdAt      DateTime      @default(now())
+
+  // Snapshot cliente al momento de facturar
+  clienteNombre   String?
+  clienteNif      String?
+  clienteTelefono String?
+  clienteDireccion String?
+  clienteCp       String?
+  clienteCiudad   String?
+  clienteEmail    String?
 }
 
 model FacturaItem {

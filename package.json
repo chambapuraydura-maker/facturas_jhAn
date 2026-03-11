@@ -33,7 +33,9 @@
   "dependencies": {
     "@prisma/client": "^6.19.2",
     "electron": "^40.6.1",
-    "prisma": "^6.19.2"
+    "exceljs": "^4.4.0",
+    "prisma": "^6.19.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^25.3.3",

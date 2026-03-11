@@ -33,4 +33,6 @@ contextBridge.exposeInMainWorld('api', {
         update: (id: string, data: any) => ipcRenderer.invoke('facturas:update', id, data),
         delete: (id: string) => ipcRenderer.invoke('facturas:delete', id),
     },
+
+    exportExcel: (filename: string, buffer: number[]) => ipcRenderer.invoke('export:excel', filename, buffer),
 });

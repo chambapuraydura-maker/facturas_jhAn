@@ -5,708 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Facturador Restaurante Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-/* ══════════════════════════════════════════════════════════════
-   DESIGN SYSTEM — Dark Premium Restaurant
-══════════════════════════════════════════════════════════════ */
-:root {
-  /* Dark surfaces */
-  --bg-deep:    #0a0908;
-  --bg-main:    #111110;
-  --bg-card:    #1a1917;
-  --bg-raised:  #222120;
-  --bg-hover:   #2a2927;
-  --bg-input:   #1e1d1c;
-
-  /* Borders */
-  --border:     #2e2c2a;
-  --border-md:  #3d3a37;
-  --border-lt:  #4a4744;
-
-  /* Text */
-  --text-1:     #f5f0eb;
-  --text-2:     #b8b0a8;
-  --text-3:     #7a736c;
-  --text-4:     #4a4540;
-
-  /* Accent — warm amber/gold */
-  --accent:     #d4820a;
-  --accent-dim: #2a1f08;
-  --accent-glow:rgba(212,130,10,.18);
-  --accent-lt:  #f5a623;
-
-  /* States */
-  --green:      #22c55e;
-  --green-dim:  #0a2010;
-  --red:        #ef4444;
-  --red-dim:    #200a0a;
-  --blue:       #3b82f6;
-  --blue-dim:   #0a1020;
-  --orange:     #f97316;
-  --orange-dim: #1f0e05;
-
-  /* Food/Drink */
-  --food-c:     #4ade80;
-  --food-bg:    #0a1f0f;
-  --drink-c:    #60a5fa;
-  --drink-bg:   #081525;
-
-  /* Misc */
-  --radius:     10px;
-  --radius-sm:  6px;
-  --radius-lg:  14px;
-  --shadow:     0 4px 24px rgba(0,0,0,.5);
-  --shadow-lg:  0 12px 48px rgba(0,0,0,.7);
-  --transition: .15s ease;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow: hidden; }
-body {
-  font-family: 'Outfit', sans-serif;
-  background: var(--bg-deep);
-  color: var(--text-1);
-  font-size: 14px;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-md); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--border-lt); }
-
-/* ── LAYOUT ── */
-.app { display: flex; flex-direction: column; height: 100vh; }
-.app-body { flex: 1; overflow: hidden; display: flex; }
-.page { display: none; flex: 1; overflow: hidden; }
-.page.active { display: flex; }
-
-/* ══════════════════════════════════════════════════════════════
-   TOP NAV
-══════════════════════════════════════════════════════════════ */
-.topnav {
-  height: 54px;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  gap: 6px;
-  flex-shrink: 0;
-  -webkit-app-region: drag;
-  position: relative;
-  z-index: 10;
-}
-.topnav::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
-}
-.logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: .03em;
-  color: var(--text-1);
-  margin-right: 16px;
-  white-space: nowrap;
-}
-.logo em { color: var(--accent-lt); font-style: normal; }
-.nav-tabs { display: flex; gap: 2px; -webkit-app-region: no-drag; }
-.nav-tab {
-  display: flex; align-items: center; gap: 7px;
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: .83rem; font-weight: 500;
-  color: var(--text-3);
-  border: none; background: transparent;
-  font-family: inherit;
-  transition: all var(--transition);
-  -webkit-app-region: no-drag;
-  white-space: nowrap;
-}
-.nav-tab:hover { color: var(--text-2); background: var(--bg-hover); }
-.nav-tab.active { color: var(--accent-lt); background: var(--accent-dim); }
-.nav-tab .tab-icon { font-size: .95rem; }
-.nav-spacer { flex: 1; }
-.topnav-right { display: flex; gap: 8px; align-items: center; -webkit-app-region: no-drag; }
-
-/* ══════════════════════════════════════════════════════════════
-   BUTTONS
-══════════════════════════════════════════════════════════════ */
-.btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 18px;
-  border: none; border-radius: var(--radius-sm);
-  font-family: inherit; font-size: .83rem; font-weight: 500;
-  cursor: pointer; transition: all var(--transition);
-  white-space: nowrap;
-}
-.btn-accent { background: var(--accent); color: #fff; }
-.btn-accent:hover { background: var(--accent-lt); }
-.btn-ghost { background: transparent; border: 1px solid var(--border-md); color: var(--text-2); }
-.btn-ghost:hover { border-color: var(--border-lt); color: var(--text-1); background: var(--bg-hover); }
-.btn-green { background: var(--green-dim); border: 1px solid #166534; color: var(--green); }
-.btn-green:hover { background: var(--green); color: #fff; }
-.btn-red { background: var(--red-dim); border: 1px solid #7f1d1d; color: var(--red); }
-.btn-red:hover { background: var(--red); color: #fff; }
-.btn-blue { background: var(--blue-dim); border: 1px solid #1e3a8a; color: var(--blue); }
-.btn-blue:hover { background: var(--blue); color: #fff; }
-.btn-sm { padding: 6px 12px; font-size: .78rem; }
-.btn-xs { padding: 4px 8px; font-size: .73rem; border-radius: 4px; }
-.btn-icon { padding: 8px; border-radius: var(--radius-sm); }
-.btn:disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
-
-/* ══════════════════════════════════════════════════════════════
-   INPUTS
-══════════════════════════════════════════════════════════════ */
-.inp {
-  width: 100%;
-  padding: 9px 12px;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text-1);
-  font-family: inherit; font-size: .875rem;
-  outline: none; transition: border-color var(--transition);
-}
-.inp:focus { border-color: var(--accent); }
-.inp::placeholder { color: var(--text-4); }
-.inp-label { display: block; font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--text-3); margin-bottom: 5px; }
-.form-group { margin-bottom: 14px; }
-.form-row { display: grid; gap: 12px; }
-.cols-2 { grid-template-columns: 1fr 1fr; }
-.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-select.inp { cursor: pointer; }
-
-/* ══════════════════════════════════════════════════════════════
-   BADGES
-══════════════════════════════════════════════════════════════ */
-.badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 8px; border-radius: 20px;
-  font-size: .69rem; font-weight: 600; letter-spacing: .04em;
-}
-.b-draft    { background: var(--bg-raised); color: var(--text-3); border: 1px solid var(--border-md); }
-.b-pending  { background: var(--orange-dim); color: var(--orange); border: 1px solid #7c2d12; }
-.b-paid     { background: var(--green-dim); color: var(--green); border: 1px solid #166534; }
-
-/* ══════════════════════════════════════════════════════════════
-   PAGE: FACTURAS
-══════════════════════════════════════════════════════════════ */
-#page-facturas { display: none; }
-#page-facturas.active { display: grid; grid-template-columns: 300px 1fr; }
-
-/* — SIDEBAR — */
-.f-sidebar {
-  background: var(--bg-card);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  overflow: hidden;
-}
-.f-sb-top {
-  padding: 14px 14px 10px;
-  border-bottom: 1px solid var(--border);
-  display: flex; flex-direction: column; gap: 10px;
-  flex-shrink: 0;
-}
-.f-sb-top-row { display: flex; justify-content: space-between; align-items: center; }
-.f-sb-top-row h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; color: var(--text-1); }
-.search-wrap { position: relative; }
-.search-wrap input {
-  width: 100%;
-  padding: 7px 10px 7px 32px;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text-1); font-family: inherit; font-size: .83rem;
-  outline: none; transition: border-color var(--transition);
-}
-.search-wrap input:focus { border-color: var(--accent); }
-.search-wrap::before {
-  content: '⌕';
-  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
-  color: var(--text-4); font-size: 1rem; pointer-events: none;
-}
-
-.f-list-wrap { flex: 1; overflow-y: auto; }
-.f-item {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  transition: background var(--transition);
-  display: flex; justify-content: space-between; align-items: flex-start;
-  position: relative;
-}
-.f-item:hover { background: var(--bg-hover); }
-.f-item.active {
-  background: var(--accent-dim);
-  border-left: 2px solid var(--accent);
-}
-.f-item.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--accent); }
-.fi-num { font-weight: 600; font-size: .88rem; color: var(--text-1); }
-.fi-client { font-size: .78rem; color: var(--text-2); margin-top: 2px; }
-.fi-date { font-size: .72rem; color: var(--text-4); margin-top: 3px; }
-.fi-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
-.fi-total { font-weight: 600; font-size: .88rem; color: var(--accent-lt); }
-
-/* — EDITOR — */
-.f-editor { flex: 1; overflow-y: auto; background: var(--bg-main); padding: 24px 32px; }
-
-.editor-toolbar {
-  display: flex; gap: 8px; margin-bottom: 20px;
-  align-items: center; flex-wrap: wrap;
-}
-.status-sel {
-  padding: 8px 12px;
-  background: var(--bg-input); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); color: var(--text-1);
-  font-family: inherit; font-size: .83rem; cursor: pointer; outline: none;
-}
-.tb-sep { flex: 1; }
-
-/* ── INVOICE PAPER (print-white) ── */
-.inv-paper {
-  background: #ffffff;
-  border-radius: var(--radius);
-  padding: 44px 52px;
-  max-width: 860px;
-  color: #1c1917;
-  box-shadow: var(--shadow-lg);
-  position: relative;
-  overflow: hidden;
-}
-.inv-paper::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 4px;
-  background: linear-gradient(90deg, #d4820a, #f5a623, #d4820a);
-}
-
-/* Paper internals — light theme */
-.inv-paper { --p-text: #1c1917; --p-muted: #6b7280; --p-dim: #9ca3af; --p-line: #e5e7eb; --p-bg: #f9fafb; --p-accent: #b45309; }
-.p-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; }
-.p-brand-name { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 700; color: var(--p-text); }
-.p-brand-name em { color: var(--p-accent); font-style: normal; }
-.p-brand-sub { font-size: .78rem; color: var(--p-muted); margin-top: 4px; max-width: 260px; }
-.p-inv-title { text-align: right; }
-.p-inv-word { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 700; color: var(--p-accent); line-height: 1; }
-.p-inv-num { font-size: .83rem; color: var(--p-muted); margin-top: 6px; }
-.p-inv-num strong { color: var(--p-text); font-size: 1rem; }
-
-/* Client selector widget */
-.client-selector-bar {
-  background: var(--bg-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  margin-bottom: 16px;
-  display: flex; align-items: center; gap: 10px;
-  max-width: 860px;
-}
-.cs-label { font-size: .75rem; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .07em; white-space: nowrap; }
-.cs-select {
-  flex: 1;
-  background: var(--bg-input); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); color: var(--text-1);
-  font-family: inherit; font-size: .875rem; padding: 7px 10px;
-  outline: none; cursor: pointer;
-}
-.cs-select:focus { border-color: var(--accent); }
-
-.p-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1.5px solid var(--p-line); }
-.p-party-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--p-dim); margin-bottom: 8px; }
-.p-editable {
-  display: block; width: 100%;
-  border: none; background: transparent;
-  font-family: inherit; font-size: inherit; color: var(--p-text);
-  padding: 2px 4px; border-radius: 3px; outline: none;
-  border-bottom: 1px dashed transparent;
-  transition: all var(--transition);
-}
-.p-editable:hover { background: #f3f4f6; border-bottom-color: #d1d5db; }
-.p-editable:focus { background: #fef3c7; border-bottom-color: #d97706; }
-.p-editable::placeholder { color: #d1d5db; }
-.p-editable.name { font-weight: 600; font-size: .95rem; }
-.p-editable.sub  { font-size: .83rem; color: var(--p-muted); }
-
-.p-dates { display: flex; gap: 28px; margin-bottom: 24px; }
-.p-date-f label { display: block; font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--p-dim); margin-bottom: 4px; }
-.p-date-f input {
-  border: 1.5px solid var(--p-line); border-radius: var(--radius-sm);
-  padding: 7px 10px; font-family: inherit; font-size: .83rem;
-  color: var(--p-text); background: var(--p-bg); outline: none;
-}
-.p-date-f input:focus { border-color: var(--p-accent); }
-
-/* Quick-add pills */
-.quick-bar { margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; }
-.quick-bar-label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--text-3); display: flex; align-items: center; gap: 8px; }
-.quick-pills { display: flex; flex-wrap: wrap; gap: 5px; }
-.qpill {
-  padding: 4px 10px; border-radius: 20px; font-size: .75rem; font-weight: 500;
-  cursor: pointer; border: 1px solid; transition: all .1s; font-family: inherit;
-}
-.qp-food  { background: var(--food-bg); border-color: #166534; color: var(--food-c); }
-.qp-food:hover  { background: #166534; color: #fff; }
-.qp-drink { background: var(--drink-bg); border-color: #1e40af; color: var(--drink-c); }
-.qp-drink:hover { background: #1e40af; color: #fff; }
-
-/* Items table */
-.p-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-.p-table thead tr { background: #1c1917; }
-.p-table thead th { padding: 10px 12px; font-size: .68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: #d1d5db; text-align: left; }
-.p-table thead th.r { text-align: right; }
-.p-table thead th.c { text-align: center; }
-.p-table tbody tr { border-bottom: 1px solid var(--p-line); }
-.p-table tbody tr:hover td { background: #fafafa; }
-.p-table td { padding: 8px 12px; vertical-align: middle; }
-.type-pill {
-  display: inline-flex; align-items: center; gap: 3px;
-  padding: 3px 7px; border-radius: 20px; font-size: .72rem; font-weight: 600;
-  cursor: pointer; border: 1px solid; transition: all .1s;
-  white-space: nowrap; user-select: none;
-}
-.tp-food  { background: #f0fdf4; border-color: #86efac; color: #15803d; }
-.tp-drink { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
-.ti { border: none; background: transparent; font-family: inherit; color: #1c1917; outline: none; }
-.ti-desc { width: 100%; font-size: .875rem; }
-.ti-qty  { width: 50px; text-align: center; font-size: .875rem; }
-.ti-price{ width: 76px; text-align: right; font-size: .875rem; }
-.td-r { text-align: right; font-weight: 500; font-size: .875rem; }
-.td-c { text-align: center; font-size: .78rem; color: #6b7280; }
-.del-row { background: none; border: none; cursor: pointer; color: #d1d5db; font-size: .9rem; padding: 2px 4px; border-radius: 3px; transition: all .1s; }
-.del-row:hover { background: #fee2e2; color: #dc2626; }
-
-.add-row-btns { display: flex; gap: 8px; margin-bottom: 20px; }
-.add-food-btn { padding: 6px 12px; border-radius: 20px; font-size: .78rem; font-weight: 500; cursor: pointer; font-family: inherit; background: #f0fdf4; border: 1.5px solid #86efac; color: #15803d; transition: all .1s; }
-.add-food-btn:hover { background: #86efac; }
-.add-drink-btn { padding: 6px 12px; border-radius: 20px; font-size: .78rem; font-weight: 500; cursor: pointer; font-family: inherit; background: #eff6ff; border: 1.5px solid #93c5fd; color: #1d4ed8; transition: all .1s; }
-.add-drink-btn:hover { background: #93c5fd; }
-
-/* Totals */
-.p-totals { display: flex; justify-content: flex-end; margin-bottom: 28px; }
-.totals-box { width: 300px; }
-.t-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--p-line); font-size: .83rem; }
-.t-row:last-child { border: none; }
-.t-row.big { font-weight: 700; font-size: 1.05rem; padding-top: 10px; color: var(--p-text); }
-.t-row label { color: var(--p-muted); font-size: .8rem; }
-.t-bases { font-size: .75rem; color: var(--p-muted); padding: 6px 0; border-bottom: 1px solid var(--p-line); display: flex; gap: 12px; flex-wrap: wrap; }
-.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-
-/* Notes */
-.p-notes { border-top: 1.5px solid var(--p-line); padding-top: 18px; }
-.p-notes-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--p-dim); margin-bottom: 6px; }
-.p-notes textarea { width: 100%; border: 1.5px solid var(--p-line); border-radius: var(--radius-sm); padding: 10px 12px; font-family: inherit; font-size: .83rem; color: var(--p-text); background: var(--p-bg); resize: none; outline: none; min-height: 56px; }
-.p-notes textarea:focus { border-color: var(--p-accent); }
-
-/* empty state */
-.empty-inv { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 14px; color: var(--text-3); }
-.empty-inv .ei-icon { font-size: 3.5rem; opacity: .4; }
-.empty-inv p { font-size: .95rem; }
-
-/* ══════════════════════════════════════════════════════════════
-   PAGE: CLIENTES
-══════════════════════════════════════════════════════════════ */
-#page-clientes { display: none; }
-#page-clientes.active { display: grid; grid-template-columns: 340px 1fr; }
-
-.cl-sidebar {
-  background: var(--bg-card);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; overflow: hidden;
-}
-.cl-sb-top {
-  padding: 14px;
-  border-bottom: 1px solid var(--border);
-  display: flex; flex-direction: column; gap: 10px;
-  flex-shrink: 0;
-}
-.cl-list-wrap { flex: 1; overflow-y: auto; }
-.cl-item {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  transition: background var(--transition);
-  display: flex; align-items: center; gap: 12px;
-}
-.cl-item:hover { background: var(--bg-hover); }
-.cl-item.active { background: var(--accent-dim); border-left: 2px solid var(--accent); }
-.cl-avatar {
-  width: 38px; height: 38px; border-radius: 50%;
-  background: var(--accent-dim); border: 1px solid var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700;
-  color: var(--accent-lt); flex-shrink: 0;
-}
-.cl-info { flex: 1; min-width: 0; }
-.cl-name { font-weight: 500; font-size: .88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cl-nif  { font-size: .75rem; color: var(--text-3); margin-top: 1px; }
-
-.cl-editor {
-  flex: 1; overflow-y: auto;
-  background: var(--bg-main); padding: 28px 36px;
-}
-.cl-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 32px;
-  max-width: 680px;
-  position: relative;
-  overflow: hidden;
-}
-.cl-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-lt));
-}
-.cl-card-header {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  margin-bottom: 28px; padding-bottom: 18px; border-bottom: 1px solid var(--border);
-}
-.cl-card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; }
-.cl-card-sub { font-size: .8rem; color: var(--text-3); margin-top: 3px; }
-.cl-section-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text-3); margin: 18px 0 12px; display: flex; align-items: center; gap: 8px; }
-.cl-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-.cl-stat { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; }
-.cl-stat-val { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--accent-lt); }
-.cl-stat-label { font-size: .72rem; color: var(--text-3); margin-top: 3px; }
-.cl-stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-
-/* ══════════════════════════════════════════════════════════════
-   PAGE: CARTA
-══════════════════════════════════════════════════════════════ */
-#page-carta { display: none; flex-direction: column; }
-#page-carta.active { display: flex; }
-
-.carta-topbar {
-  padding: 16px 24px;
-  background: var(--bg-card); border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  flex-shrink: 0;
-}
-.carta-topbar h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; }
-.carta-topbar p { font-size: .8rem; color: var(--text-3); margin-top: 2px; }
-.carta-topbar-btns { display: flex; gap: 8px; }
-
-.carta-body {
-  flex: 1; overflow-y: auto; padding: 24px;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-content: start;
-}
-
-.cs-card {
-  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
-}
-.cs-header {
-  padding: 14px 18px; border-bottom: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center;
-}
-.cs-header.food { background: linear-gradient(135deg, #0a2010 0%, #0d1f0a 100%); }
-.cs-header.drink { background: linear-gradient(135deg, #08152a 0%, #0a1020 100%); }
-.cs-title { display: flex; align-items: center; gap: 8px; font-weight: 600; }
-.cs-iva { font-size: .7rem; font-weight: 700; padding: 3px 8px; border-radius: 10px; }
-.cs-iva-food  { background: var(--food-bg); color: var(--food-c); border: 1px solid #166534; }
-.cs-iva-drink { background: var(--drink-bg); color: var(--drink-c); border: 1px solid #1e40af; }
-.cs-body { padding: 6px; }
-.cs-count { font-size: .75rem; color: var(--text-3); }
-
-.ci {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px; border-radius: var(--radius-sm);
-  transition: background var(--transition);
-}
-.ci:hover { background: var(--bg-hover); }
-.ci-toggle { flex-shrink: 0; }
-.toggle {
-  width: 34px; height: 18px; border-radius: 9px;
-  background: var(--bg-raised); border: 1px solid var(--border-md);
-  cursor: pointer; position: relative; transition: all .2s;
-  flex-shrink: 0;
-}
-.toggle.on { background: var(--green); border-color: var(--green); }
-.toggle::after {
-  content: ''; position: absolute; top: 2px; left: 2px;
-  width: 12px; height: 12px; border-radius: 50%; background: white;
-  transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.4);
-}
-.toggle.on::after { transform: translateX(16px); }
-.ci-name { flex: 1; }
-.ci-name input {
-  background: transparent; border: none; font-family: inherit; font-size: .875rem;
-  color: var(--text-1); width: 100%; outline: none; padding: 2px 4px; border-radius: 3px;
-}
-.ci-name input:hover { background: var(--bg-hover); }
-.ci-name input:focus { background: var(--accent-dim); border-bottom: 1px solid var(--accent); }
-.ci-price { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-.price-inp {
-  background: var(--bg-input); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 5px 8px;
-  font-family: inherit; font-size: .83rem; font-weight: 600;
-  color: var(--accent-lt); width: 72px; text-align: right; outline: none;
-}
-.price-inp:focus { border-color: var(--accent); }
-.ci-del { background: none; border: none; cursor: pointer; color: var(--text-4); font-size: .85rem; padding: 4px; border-radius: 3px; opacity: 0; transition: all .15s; }
-.ci:hover .ci-del { opacity: 1; }
-.ci-del:hover { background: var(--red-dim); color: var(--red); }
-
-.ci-add-form {
-  padding: 10px; border-top: 1px solid var(--border);
-  display: flex; gap: 8px; align-items: center;
-}
-.ci-add-form input {
-  flex: 1; padding: 7px 10px; background: var(--bg-input);
-  border: 1px solid var(--border); border-radius: var(--radius-sm);
-  font-family: inherit; font-size: .83rem; color: var(--text-1); outline: none;
-}
-.ci-add-form input:focus { border-color: var(--accent); }
-.ci-add-form input.pi { width: 72px; flex: none; text-align: right; }
-
-/* AI Import section */
-.ai-import-bar {
-  background: linear-gradient(135deg, #1a1208 0%, #0f0f0f 100%);
-  border: 1px solid #3d3010;
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  margin-bottom: 16px;
-  display: flex; align-items: center; gap: 10px;
-}
-.ai-import-label { font-size: .78rem; color: var(--accent-lt); font-weight: 500; }
-.ai-indicator { display: none; align-items: center; gap: 6px; font-size: .78rem; color: var(--text-3); }
-.ai-indicator.visible { display: flex; }
-.ai-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 1s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-.ai-note { font-size: .72rem; color: var(--text-4); }
-
-/* ══════════════════════════════════════════════════════════════
-   PAGE: EMPRESA
-══════════════════════════════════════════════════════════════ */
-#page-empresa { display: none; overflow-y: auto; padding: 32px; justify-content: center; }
-#page-empresa.active { display: flex; }
-.emp-form {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius-lg); padding: 36px;
-  width: 100%; max-width: 660px; box-shadow: var(--shadow);
-  position: relative; overflow: hidden;
-}
-.emp-form::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-lt)); }
-.emp-form h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; margin-bottom: 4px; }
-.emp-form .sub { font-size: .83rem; color: var(--text-3); margin-bottom: 28px; }
-.sec-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text-3); margin: 20px 0 12px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
-.sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-.save-ok { background: var(--green-dim); border: 1px solid #166534; color: var(--green); padding: 10px 16px; border-radius: var(--radius-sm); font-size: .83rem; display: none; margin-top: 14px; }
-
-/* ══════════════════════════════════════════════════════════════
-   MODAL
-══════════════════════════════════════════════════════════════ */
-.overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,.75); backdrop-filter: blur(4px);
-  align-items: center; justify-content: center; z-index: 500;
-  animation: fadeIn .15s ease;
-}
-.overlay.open { display: flex; }
-@keyframes fadeIn { from{opacity:0} to{opacity:1} }
-.modal {
-  background: var(--bg-card); border: 1px solid var(--border-md);
-  border-radius: var(--radius-lg); padding: 32px;
-  width: 480px; max-width: 95vw;
-  box-shadow: var(--shadow-lg);
-  animation: slideUp .2s ease;
-  position: relative;
-}
-@keyframes slideUp { from{transform:translateY(16px);opacity:0} to{transform:none;opacity:1} }
-.modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-lt)); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
-.modal h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; margin-bottom: 5px; }
-.modal .m-sub { font-size: .83rem; color: var(--text-3); margin-bottom: 22px; }
-.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 22px; }
-
-/* Toast */
-#toast {
-  position: fixed; bottom: 24px; right: 24px;
-  background: var(--bg-raised); border: 1px solid var(--border-md);
-  color: var(--text-1); padding: 12px 18px; border-radius: var(--radius);
-  font-size: .83rem; z-index: 9999; box-shadow: var(--shadow-lg);
-  transform: translateY(8px); opacity: 0;
-  transition: all .25s ease; pointer-events: none;
-}
-#toast.show { transform: none; opacity: 1; }
-
-/* Loading */
-#loadScreen {
-  position: fixed; inset: 0; background: var(--bg-deep);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; z-index: 9999;
-}
-.ls-logo { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; color: var(--text-1); }
-.ls-logo em { color: var(--accent-lt); font-style: normal; }
-.ls-sub { font-size: .83rem; color: var(--text-3); }
-.spin { width: 28px; height: 28px; border: 2.5px solid var(--border-md); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* AI modal image preview */
-.ai-image-preview {
-  width: 100%; max-height: 200px; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); object-fit: contain;
-  background: var(--bg-deep); margin-bottom: 14px; display: none;
-}
-.ai-result-list { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
-.ai-result-item {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--bg-raised); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 8px 10px;
-}
-.ai-result-item input { background: transparent; border: none; color: var(--text-1); font-family: inherit; font-size: .83rem; flex: 1; outline: none; }
-.ai-result-item input:focus { border-bottom: 1px solid var(--accent); }
-.ai-result-item .ai-price { width: 70px; text-align: right; font-weight: 600; color: var(--accent-lt); }
-.ai-result-item .ai-type-toggle {
-  padding: 3px 7px; border-radius: 10px; font-size: .7rem; font-weight: 600; cursor: pointer;
-  border: 1px solid; transition: all .1s; font-family: inherit;
-}
-.ai-tt-food  { background: var(--food-bg); border-color: #166834; color: var(--food-c); }
-.ai-tt-drink { background: var(--drink-bg); border-color: #1e3a8a; color: var(--drink-c); }
-.ai-remove { background: none; border: none; color: var(--text-4); cursor: pointer; font-size: .85rem; padding: 2px; }
-.ai-remove:hover { color: var(--red); }
-
-/* Print hide */
-@media print {
-  .topnav, .f-sidebar, .editor-toolbar, .quick-bar, .client-selector-bar, .add-row-btns { display: none !important; }
-  body, html, .app, .app-body, #page-facturas, .f-editor { height: auto !important; overflow: visible !important; display: block !important; }
-  .inv-paper { box-shadow: none !important; max-width: 100% !important; padding: 20px !important; }
-}
-
-/* Validation error highlight */
-.field-error {
-  border-color: #ef4444 !important;
-  background: #200a0a !important;
-  animation: shake .3s ease;
-}
-@keyframes shake {
-  0%,100%{transform:translateX(0)}
-  25%{transform:translateX(-4px)}
-  75%{transform:translateX(4px)}
-}
-
-/* Client dropdown items */
-.cl-drop-item {
-  padding: 10px 14px;
-  cursor: pointer;
-  border-bottom: 1px solid var(--border);
-  transition: background var(--transition);
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-.cl-drop-item:last-child { border-bottom: none; }
-.cl-drop-item:hover { background: var(--bg-hover); }
-.cl-drop-item.selected { background: var(--accent-dim); }
-.cl-drop-name { font-weight: 500; font-size: .875rem; }
-.cl-drop-nif  { font-size: .75rem; color: var(--text-3); margin-top: 1px; }
-.cl-drop-none { padding: 12px 14px; font-size: .83rem; color: var(--text-4); text-align: center; }
-</style>
+<link rel="stylesheet" href="style/style.css">
 </head>
 <body>
 
@@ -729,15 +28,12 @@ select.inp { cursor: pointer; }
       <button class="nav-tab" onclick="showPage('empresa')" id="tab-empresa"><span class="tab-icon">🏪</span> Mi Empresa</button>
     </div>
     <div class="nav-spacer"></div>
-    <div class="topnav-right">
-      <button class="btn btn-ghost btn-sm" onclick="window.api.openFolder()">📁 Datos</button>
-    </div>
   </nav>
 
   <div class="app-body">
 
     <!-- ════════════════════════════════════════════
-         PAGE: FACTURAS
+        PAGE: FACTURAS
     ════════════════════════════════════════════ -->
     <div class="page" id="page-facturas">
       <!-- Sidebar -->
@@ -852,8 +148,28 @@ select.inp { cursor: pointer; }
                 <span style="font-size:.7rem;color:var(--food-c)">Comida 10%</span>
                 <span style="width:7px;height:7px;border-radius:50%;background:var(--drink-c);display:inline-block"></span>
                 <span style="font-size:.7rem;color:var(--drink-c)">Bebida 21%</span>
+                <button class="btn btn-ghost btn-xs" style="margin-left:auto" onclick="openCartaModal()">📋 Ver carta completa</button>
               </div>
-              <div class="quick-pills" id="quickPills"></div>
+            </div>
+            <!-- MODAL CARTA -->
+            <div class="overlay" id="cartaModal">
+              <div class="modal" style="width:680px;max-width:97vw;max-height:85vh;display:flex;flex-direction:column">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+                  <h3>📋 Añadir de Carta</h3>
+                  <button class="btn btn-ghost btn-xs" onclick="document.getElementById('cartaModal').classList.remove('open')">✕</button>
+                </div>
+
+                <!-- Buscador y filtro categoría -->
+                <div style="display:flex;gap:8px;margin-bottom:12px">
+                  <input class="inp" id="cartaModalSearch" placeholder="Buscar plato o bebida..." oninput="renderCartaModal()" style="flex:1">
+                  <select class="inp" id="cartaModalCat" onchange="renderCartaModal()" style="width:180px">
+                    <option value="">Todas las categorías</option>
+                  </select>
+                </div>
+
+                <!-- Lista de productos -->
+                <div id="cartaModalList" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px"></div>
+              </div>
             </div>
 
             <!-- Items table -->
@@ -901,7 +217,7 @@ select.inp { cursor: pointer; }
     </div><!-- /page-facturas -->
 
     <!-- ════════════════════════════════════════════
-         PAGE: CLIENTES
+        PAGE: CLIENTES
     ════════════════════════════════════════════ -->
     <div class="page" id="page-clientes">
       <aside class="cl-sidebar">
@@ -921,6 +237,7 @@ select.inp { cursor: pointer; }
           <div class="ei-icon">👥</div>
           <p>Selecciona o crea un cliente</p>
           <button class="btn btn-accent" onclick="newClient()">＋ Nuevo Cliente</button>
+          <button class="btn btn-ghost btn-xs" onclick="exportClientesExcel()">📥 Exportar Excel</button>
         </div>
         <div id="clForm" style="display:none">
           <div class="cl-card">
@@ -940,19 +257,39 @@ select.inp { cursor: pointer; }
 
             <div class="cl-section-title">Datos Fiscales</div>
             <div class="form-row cols-2">
-              <div class="form-group"><label class="inp-label">Nombre / Razón Social *</label><input class="inp" id="cl_nombre" placeholder="Empresa o nombre"></div>
-              <div class="form-group"><label class="inp-label">NIF / CIF</label><input class="inp" id="cl_nif" placeholder="B12345678"></div>
+              <div class="form-group">
+                <label class="inp-label">Nombre / Razón Social *</label>
+                <input class="inp" id="cl_nombre" placeholder="Empresa o nombre" oninput="this.value=this.value.replace(/[^A-Z0-9]/gi,'').toUpperCase()">
+              </div>
+              <div class="form-group">
+                <label class="inp-label">NIF / CIF</label>
+                <input class="inp" id="cl_nif" placeholder="B12345678" oninput="this.value=this.value.toUpperCase()">
+              </div>
             </div>
-            <div class="form-group"><label class="inp-label">Dirección</label><input class="inp" id="cl_dir" placeholder="Calle, número, piso"></div>
+            <div class="form-group">
+              <label class="inp-label">Dirección</label>
+              <input class="inp" id="cl_dir" placeholder="Calle, número, piso" oninput="this.value=this.value.toUpperCase()"></div>
             <div class="form-row cols-3">
-              <div class="form-group"><label class="inp-label">CP</label><input class="inp" id="cl_cp" placeholder="28001"></div>
-              <div class="form-group" style="grid-column:span 2"><label class="inp-label">Ciudad</label><input class="inp" id="cl_ciudad" placeholder="Madrid"></div>
+              <div class="form-group">
+                <label class="inp-label">CP</label>
+                <input class="inp" id="cl_cp" placeholder="28001" oninput="this.value=this.value.toUpperCase()">
+              </div>
+              <div class="form-group" style="grid-column:span 2">
+                <label class="inp-label">Ciudad</label>
+                <input class="inp" id="cl_ciudad" placeholder="Madrid" oninput="this.value=this.value.toUpperCase()">
+              </div>
             </div>
 
             <div class="cl-section-title">Contacto</div>
             <div class="form-row cols-2">
-              <div class="form-group"><label class="inp-label">Teléfono</label><input class="inp" id="cl_tel" placeholder="+34 600 000 000"></div>
-              <div class="form-group"><label class="inp-label">Email</label><input class="inp" id="cl_email" placeholder="cliente@email.com"></div>
+              <div class="form-group">
+                <label class="inp-label">Teléfono</label>
+                <input class="inp" id="cl_tel" placeholder="+34 600 000 000" oninput="this.value=this.value.toUpperCase()">
+              </div>
+              <div class="form-group">
+                <label class="inp-label">Email</label>
+                <input class="inp" id="cl_email" placeholder="cliente@email.com" oninput="this.value=this.value.toLowerCase()">
+              </div>
             </div>
 
             <div class="cl-section-title">Notas internas</div>
@@ -968,54 +305,78 @@ select.inp { cursor: pointer; }
     </div>
 
     <!-- ════════════════════════════════════════════
-         PAGE: CARTA
+        PAGE: CARTA
     ════════════════════════════════════════════ -->
     <div class="page" id="page-carta">
-      <div class="carta-topbar">
-        <div>
-          <h2>📋 Mi Carta</h2>
-          <p>Activa, desactiva o edita precios. Los cambios se aplican al añadir a facturas.</p>
+      <div class="carta-sidebar">
+        <div class="carta-sb-top">
+          <h3>Categorías</h3>
+          <button class="btn btn-accent btn-xs" onclick="openAddCategoria()">＋ Nueva</button>
         </div>
-        <div class="carta-topbar-btns">
-          <button class="btn btn-ghost btn-sm" onclick="openAIImport()">🤖 Importar con IA</button>
-          <button class="btn btn-accent btn-sm" onclick="saveCarta()">💾 Guardar</button>
-        </div>
+        <div class="carta-cat-list" id="cartaCatList"></div>
       </div>
-      <div class="carta-body">
-        <!-- Comida -->
-        <div class="cs-card">
-          <div class="cs-header food">
-            <div class="cs-title"><span>🍽</span> Comida <span class="cs-iva cs-iva-food">10% IVA</span></div>
-            <span class="cs-count" id="foodCount"></span>
-          </div>
-          <div class="cs-body" id="cartaFood"></div>
-          <div class="ci-add-form">
-            <input type="text" placeholder="Nuevo plato..." id="nfName">
-            <input type="number" class="pi" step="0.01" min="0" placeholder="0,00" id="nfPrice">
-            <span style="font-size:.8rem;color:var(--text-3)">€</span>
-            <button class="btn btn-green btn-xs" onclick="addCartaItem('food')">＋</button>
-          </div>
-        </div>
 
-        <!-- Bebidas -->
-        <div class="cs-card">
-          <div class="cs-header drink">
-            <div class="cs-title"><span>🥤</span> Bebidas <span class="cs-iva cs-iva-drink">21% IVA</span></div>
-            <span class="cs-count" id="drinkCount"></span>
+      <div class="carta-main">
+        <div class="carta-topbar">
+          <div>
+            <h2>📋 Mi Carta</h2>
+            <p>Gestiona productos por categoría.</p>
           </div>
-          <div class="cs-body" id="cartaDrink"></div>
-          <div class="ci-add-form">
-            <input type="text" placeholder="Nueva bebida..." id="ndName">
-            <input type="number" class="pi" step="0.01" min="0" placeholder="0,00" id="ndPrice">
-            <span style="font-size:.8rem;color:var(--text-3)">€</span>
-            <button class="btn btn-blue btn-xs" onclick="addCartaItem('drink')">＋</button>
+          <div class="carta-topbar-btns">
+            <button class="btn btn-ghost btn-sm" onclick="openAIImport()">🤖 Importar con IA</button>
           </div>
         </div>
+        <div class="carta-body" id="cartaBody"></div>
+      </div>
+  </div>
+
+  <!-- MODAL NUEVA CATEGORÍA -->
+  <div class="overlay" id="catOverlay">
+    <div class="modal">
+      <h3 id="catModalTitle">Nueva Categoría</h3>
+      <div class="form-group" style="margin-top:16px">
+        <label class="inp-label">Nombre</label>
+        <input class="inp" id="cat_nombre" placeholder="Ej: Entrantes, Postres...">
+      </div>
+      <div class="form-group">
+        <label class="inp-label">Tipo</label>
+        <select class="inp" id="cat_tipo">
+          <option value="COMIDA">🍽 Comida — 10% IVA</option>
+          <option value="BEBIDA">🥤 Bebida — 21% IVA</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeOverlay('catOverlay')">Cancelar</button>
+        <button class="btn btn-accent" onclick="saveCategoria()">Guardar</button>
       </div>
     </div>
+  </div>
+
+  <!-- MODAL NUEVO PRODUCTO -->
+  <div class="overlay" id="prodOverlay">
+    <div class="modal">
+      <h3>Nuevo Producto</h3>
+      <div class="form-group" style="margin-top:16px">
+        <label class="inp-label">Categoría</label>
+        <select class="inp" id="prod_categoria"></select>
+      </div>
+      <div class="form-group">
+        <label class="inp-label">Nombre</label>
+        <input class="inp" id="prod_nombre" placeholder="Nombre del plato o bebida">
+      </div>
+      <div class="form-group">
+        <label class="inp-label">Precio (€)</label>
+        <input class="inp" type="number" step="0.01" min="0" id="prod_precio" placeholder="0.00">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeOverlay('prodOverlay')">Cancelar</button>
+        <button class="btn btn-accent" onclick="saveProducto()">Guardar</button>
+      </div>
+    </div>
+  </div>
 
     <!-- ════════════════════════════════════════════
-         PAGE: EMPRESA
+        PAGE: EMPRESA
     ════════════════════════════════════════════ -->
     <div class="page" id="page-empresa">
       <div class="emp-form">
@@ -1023,23 +384,38 @@ select.inp { cursor: pointer; }
         <p class="sub">Tus datos fiscales se rellenan automáticamente en cada nueva factura.</p>
         <div class="sec-title">Datos Fiscales</div>
         <div class="form-row cols-2">
-          <div class="form-group"><label class="inp-label">Nombre / Razón Social</label><input class="inp" id="e_nombre" placeholder="Mi Restaurante S.L."></div>
-          <div class="form-group"><label class="inp-label">NIF / CIF</label><input class="inp" id="e_nif" placeholder="B12345678"></div>
+          <div class="form-group">
+            <label class="inp-label">Nombre / Razón Social</label>
+            <input class="inp" id="e_nombre" placeholder="Mi Restaurante S.L." oninput="this.value=this.value.replace(/[^A-Z0-9]/gi,'').toUpperCase()"
+            ></div>
+          <div class="form-group">
+            <label class="inp-label">NIF / CIF</label>
+            <input class="inp" id="e_nif" placeholder="B12345678" oninput="this.value=this.value.replace(/[^A-Z0-9]/gi,'').toUpperCase()">
+          </div>
         </div>
-        <div class="form-group"><label class="inp-label">Dirección</label><input class="inp" id="e_dir" placeholder="Calle Mayor 1"></div>
+        <div class="form-group">
+          <label class="inp-label">Dirección</label>
+          <input class="inp" id="e_dir" placeholder="Calle Mayor 1" oninput="this.value=this.value.replace(/[^A-Z0-9]/gi,'').toUpperCase()">
+        </div>
         <div class="form-row cols-3">
-          <div class="form-group"><label class="inp-label">CP</label><input class="inp" id="e_cp" placeholder="28001"></div>
-          <div class="form-group" style="grid-column:span 2"><label class="inp-label">Ciudad</label><input class="inp" id="e_ciudad" placeholder="Madrid"></div>
+          <div class="form-group">
+            <label class="inp-label">CP</label>
+            <input class="inp" id="e_cp" placeholder="28001" oninput="this.value=this.value.replace(/[^0-9]/gi,'')">
+          </div>
+          <div class="form-group" style="grid-column:span 2">
+            <label class="inp-label">Ciudad</label>
+            <input class="inp" id="e_ciudad" placeholder="Madrid" oninput="this.value=this.value.replace(/[^A-Z0-9]/gi,'').toUpperCase()">
+          </div>
         </div>
         <div class="sec-title">Contacto</div>
         <div class="form-row cols-2">
-          <div class="form-group"><label class="inp-label">Teléfono</label><input class="inp" id="e_tel" placeholder="+34 600 000 000"></div>
-          <div class="form-group"><label class="inp-label">Email</label><input class="inp" id="e_email" placeholder="restaurante@email.com"></div>
+          <div class="form-group"><label class="inp-label">Teléfono</label><input class="inp" id="e_tel" placeholder="+34 600 000 000" oninput="this.value=this.value.replace(/[^0-9+]/gi,'')"></div>
+          <div class="form-group"><label class="inp-label">Email</label><input class="inp" id="e_email" placeholder="restaurante@email.com" oninput="this.value=this.value.replace(/[^a-zA-Z0-9@._-]/gi,'') "></div>
         </div>
         <div class="form-group"><label class="inp-label">Web</label><input class="inp" id="e_web" placeholder="www.mirestaurante.com"></div>
         <div class="sec-title">Datos Bancarios</div>
         <div class="form-row cols-2">
-          <div class="form-group"><label class="inp-label">Banco</label><input class="inp" id="e_banco" placeholder="Banco Santander"></div>
+          <div class="form-group"><label class="inp-label">Banco</label><input class="inp" id="e_banco" placeholder="Banco Santander" oninput="this.value=this.value.replace(/[^A-Z0-9]/gi,'').toUpperCase()"></div>
           <div class="form-group"><label class="inp-label">IBAN</label><input class="inp" id="e_iban" placeholder="ES00 0000 0000 0000 0000 0000"></div>
         </div>
         <div class="sec-title">Configuración</div>
