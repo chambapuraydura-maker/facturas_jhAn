@@ -116,7 +116,7 @@ function renderInvList(filter = '') {
     <div class="f-item ${inv.id === currentInvoiceId ? 'active' : ''}" onclick="openInvoice('${inv.id}')">
       <div>
         <div class="fi-num">Nº ${String(inv.numero).padStart(4,'0')}</div>
-        <div class="fi-client">${inv.cliente ? escHtml(inv.cliente.nombre) : '— Sin cliente —'}</div>
+        <div class="fi-client">${inv.clienteNombre || (inv.cliente ? escHtml(inv.cliente.nombre) : '— Sin cliente —')}</div>
         <div class="fi-date">${formatDate(inv.createdAt)}</div>
       </div>
       <div class="fi-right">
@@ -167,14 +167,6 @@ function openInvoice(id) {
   // Número
   document.getElementById('pNum').textContent = String(inv.numero).padStart(4, '0');
 
-  // Emisor desde empresa en BD
-  document.getElementById('fromName').value  = empresa.nombre    || '';
-  document.getElementById('fromNIF').value   = empresa.ruc       || '';
-  document.getElementById('fromAddr').value  = empresa.direccion || '';
-  document.getElementById('fromCity').value  = [empresa.cp, empresa.ciudad].filter(Boolean).join(' ');
-  document.getElementById('fromPhone').value = empresa.telefono  || '';
-  document.getElementById('fromEmail').value = empresa.email     || '';
-
   // Cliente — usar snapshot si existe, sino datos en vivo
   if (inv.clienteNombre) {
     fillClientFields({
@@ -193,6 +185,22 @@ function openInvoice(id) {
   } else {
     clearClientFields();
     document.getElementById('clientSearch').value = '';
+  }
+   // Emisor — usar snapshot si existe, sino datos en vivo de empresa
+  if (inv.empresaNombre) {
+    document.getElementById('fromName').value  = inv.empresaNombre    || '';
+    document.getElementById('fromNIF').value   = inv.empresaRuc       || '';
+    document.getElementById('fromAddr').value  = inv.empresaDireccion || '';
+    document.getElementById('fromCity').value  = [inv.empresaCp, inv.empresaCiudad].filter(Boolean).join(' ');
+    document.getElementById('fromPhone').value = inv.empresaTelefono  || '';
+    document.getElementById('fromEmail').value = inv.empresaEmail     || '';
+  } else {
+    document.getElementById('fromName').value  = empresa.nombre    || '';
+    document.getElementById('fromNIF').value   = empresa.ruc       || '';
+    document.getElementById('fromAddr').value  = empresa.direccion || '';
+    document.getElementById('fromCity').value  = [empresa.cp, empresa.ciudad].filter(Boolean).join(' ');
+    document.getElementById('fromPhone').value = empresa.telefono  || '';
+    document.getElementById('fromEmail').value = empresa.email     || '';
   }
 
   // Fechas
@@ -217,7 +225,7 @@ function openInvoice(id) {
 
   // Filas de items
   renderInvBody(inv.items || [], esBorrador);
-  if (esBorrador) recalc();
+  recalc();
 
   // Bloquear UI si no es borrador
   setInvoiceLocked(esPagada);
@@ -286,26 +294,32 @@ async function saveCurrentInvoice() {
   const totals = collectTotals();
   const items  = collectRows();
   const clienteId = inv.clienteId || null;
+  const cl        = clients.find(c => c.id === clienteId);
 
-  // Snapshot datos cliente
-  const cl = clients.find(c => c.id === clienteId);
-  const clienteSnapshot = cl ? JSON.stringify({
-    clienteNombre:    cl?.nombre    || '',
-    clienteNif:       cl?.nif       || '',
-    clienteTelefono:  cl?.telefono  || '',
-    clienteDireccion: cl?.direccion || '',
-    clienteCp:        cl?.cp        || '',
-    clienteCiudad:    cl?.ciudad    || '',
-    clienteEmail:     cl?.email     || '',
-  }) : (inv.clienteSnapshot || null);
+    const data = {
+      fechaEmision:     document.getElementById('issueDate').value || null,
+      notas:            document.getElementById('invNotes').value  || null,
+      clienteId,
+      clienteNombre:    cl?.nombre    || '',
+      clienteNif:       cl?.nif       || '',
+      clienteTelefono:  cl?.telefono  || '',
+      clienteDireccion: cl?.direccion || '',
+      clienteCp:        cl?.cp        || '',
+      clienteCiudad:    cl?.ciudad    || '',
+      clienteEmail:     cl?.email     || '',
+      empresaNombre:    empresa?.nombre    || '',
+      empresaRuc:       empresa?.ruc       || '',
+      empresaTelefono:  empresa?.telefono  || '',
+      empresaDireccion: empresa?.direccion || '',
+      empresaCp:        empresa?.cp        || '',
+      empresaCiudad:    empresa?.ciudad    || '',
+      empresaEmail:     empresa?.email     || '',
+      empresaWeb:       empresa?.web       || '',
+      empresaIban:      empresa?.iban      || '',
+      items,
+      ...totals,
+    };
 
-  const data   = {
-    fechaEmision: document.getElementById('issueDate').value || null,
-    notas:        document.getElementById('invNotes').value  || null,
-    clienteId:    inv.clienteId || null,
-    items,
-    ...totals,
-  };
 
   try {
     const updated = await window.api.facturas.update(currentInvoiceId, data);
@@ -590,10 +604,24 @@ document.addEventListener('click', e => {
     document.getElementById('clientDropdown').style.display = 'none';
   }
 });
-
-function doPrint()   { window.print(); }
-function doSavePDF() { window.print(); }
-
+// imprimir facura
+async function doPrint()   { 
+  await window.api.printDirect();
+  showToast('✅ Enviado a impresora');
+}
+// guardar PDF
+async function doSavePDF() {
+  if (!currentInvoiceId) return;
+  const inv = invoices.find(i => i.id === currentInvoiceId);
+  if (!inv) return;
+  const filename = `factura_${String(inv.numero).padStart(4, '0')}.pdf`;
+  const result = await window.api.printPDF(filename);
+  if (result?.success) {
+    showToast(`✅ PDF guardado`);
+  } else {
+    showToast('Guardado cancelado');
+  }
+}
 /* ══════════════════════════════════════════════════════════════
   CLIENTES
 ══════════════════════════════════════════════════════════════ */

@@ -104,6 +104,16 @@ model Factura {
   clienteCp       String?
   clienteCiudad   String?
   clienteEmail    String?
+  // Snapshot empresa al momento de facturar
+  empresaNombre    String?
+  empresaRuc       String?
+  empresaTelefono  String?
+  empresaDireccion String?
+  empresaCp        String?
+  empresaCiudad    String?
+  empresaEmail     String?
+  empresaWeb       String?
+  empresaIban      String?
 }
 
 model FacturaItem {

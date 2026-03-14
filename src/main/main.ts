@@ -1,6 +1,7 @@
 import { dialog, ipcMain, app, BrowserWindow } from 'electron';
 import path from 'path';
 import ExcelJS from 'exceljs';
+import fs from 'fs';
 import './ipc/clientes';
 import './ipc/empresas';
 import './ipc/categorias';
@@ -18,11 +19,12 @@ function createWindow() {
         }
         
     });
+    win.removeMenu();
 
     win.loadFile(path.join(__dirname, '../index.html'));
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
 }
-
+// generar EXCEL de los clientes
 ipcMain.handle('export:excel', async (_, filename: string, data: any[]) => {
     const { canceled, filePath } = await dialog.showSaveDialog({
         defaultPath: path.join(app.getPath('downloads'), filename),
@@ -63,6 +65,32 @@ ipcMain.handle('export:excel', async (_, filename: string, data: any[]) => {
     await wb.xlsx.writeFile(filePath);
     return { success: true, filePath };
 });
+// generar PDF de la factura
+ipcMain.handle('print:pdf', async (event, filename: string) => {
+    const { canceled, filePath } = await dialog.showSaveDialog({
+        defaultPath: path.join(app.getPath('downloads'), filename),
+        filters: [{ name: 'PDF', extensions: ['pdf'] }],
+    });
+    if (canceled || !filePath) return { success: false };
+
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (!win) return { success: false };
+
+    const data = await win.webContents.printToPDF({
+        printBackground: true,
+        pageSize: 'A4',
+    });
+
+    fs.writeFileSync(filePath, data);
+    return { success: true, filePath };
+});
+// imprimir factura directamente sin guardar
+ipcMain.handle('print:direct', async (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (!win) return;
+    win.webContents.print({ silent: false, printBackground: true });
+});
+
 console.log('__dirname:', __dirname);
 console.log('preload path:', path.join(app.getAppPath(), 'dist/preload.js'));
 app.whenReady().then(createWindow);
