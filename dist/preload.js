@@ -31,5 +31,10 @@ electron_1.contextBridge.exposeInMainWorld('api', {
         getAll: () => electron_1.ipcRenderer.invoke('facturas:getAll'),
         getById: (id) => electron_1.ipcRenderer.invoke('facturas:getById', id),
         create: (data) => electron_1.ipcRenderer.invoke('facturas:create', data),
+        update: (id, data) => electron_1.ipcRenderer.invoke('facturas:update', id, data),
+        delete: (id) => electron_1.ipcRenderer.invoke('facturas:delete', id),
     },
+    exportExcel: (filename, buffer) => electron_1.ipcRenderer.invoke('export:excel', filename, buffer),
+    printPDF: (filename) => electron_1.ipcRenderer.invoke('print:pdf', filename),
+    printDirect: () => electron_1.ipcRenderer.invoke('print:direct'),
 });

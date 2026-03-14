@@ -10,12 +10,12 @@ datasource db {
 model Cliente {
   id        String    @id @default(uuid())
   nombre    String
-  nif       String?
+  nif       String
   email     String?
-  telefono  String?
-  direccion String?
-  cp        String?
-  ciudad    String?
+  telefono  String
+  direccion String
+  cp        String
+  ciudad    String
   notas     String?
   createdAt DateTime  @default(now())
   facturas  Factura[]
@@ -26,10 +26,10 @@ model Empresa {
   nombre    String
   ruc       String    @unique
   email     String?
-  telefono  String?
-  direccion String?
-  cp        String?
-  ciudad    String?
+  telefono  String
+  direccion String
+  cp        String
+  ciudad    String
   web       String?
   banco     String?
   iban      String?
@@ -92,10 +92,28 @@ model Factura {
 
   // Fechas y notas
   fechaEmision   DateTime?
-  fechaVence     DateTime?
   notas          String?
 
   createdAt      DateTime      @default(now())
+
+  // Snapshot cliente al momento de facturar
+  clienteNombre   String?
+  clienteNif      String?
+  clienteTelefono String?
+  clienteDireccion String?
+  clienteCp       String?
+  clienteCiudad   String?
+  clienteEmail    String?
+  // Snapshot empresa al momento de facturar
+  empresaNombre    String?
+  empresaRuc       String?
+  empresaTelefono  String?
+  empresaDireccion String?
+  empresaCp        String?
+  empresaCiudad    String?
+  empresaEmail     String?
+  empresaWeb       String?
+  empresaIban      String?
 }
 
 model FacturaItem {

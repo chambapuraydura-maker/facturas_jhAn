@@ -14,5 +14,6 @@ ipcMain.handle('categorias:update', async (_, id, data) => {
 });
 
 ipcMain.handle('categorias:delete', async (_, id) => {
+    await prisma.menuItem.deleteMany({ where: { categoriaId: id } });
     return await prisma.categoria.delete({ where: { id } });
 });
