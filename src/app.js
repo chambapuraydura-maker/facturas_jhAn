@@ -9,6 +9,7 @@ let clients    = [];
 let cartaItems = [];
 let empresa    = {};
 let categorias = [];
+let currentInvFilter = '';
 
 let currentCatId = null;
 let currentInvoiceId = null;
@@ -20,6 +21,9 @@ let pendingDeleteFn  = null;
 ══════════════════════════════════════════════════════════════ */
 async function init() {
   try {
+    
+    showPage('facturas');
+
     const [inv, cli, menu, emp, cats] = await Promise.all([
       window.api.facturas.getAll(),
       window.api.clientes.getAll(),
@@ -40,13 +44,15 @@ async function init() {
     renderCartaCatList();
     renderCarta();
     loadEmpresaForm();
+    renderLogoPreview();
     renderQuickPills();
+
 
     document.getElementById('loadScreen').style.display = 'none';
     document.getElementById('appRoot').style.display    = '';
 
-    if (invoices.length > 0) openInvoice(invoices[0].id);
-
+    //if (invoices.length > 0) openInvoice(invoices[0].id);
+    
   } catch (err) {
     console.error('Error en init:', err);
     showToast('❌ Error al cargar datos: ' + err.message, true);
@@ -78,7 +84,26 @@ function showToast(msg, isError = false) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
 }
-
+/* ══════════════════════════════════════════════════════════════
+  CERRAR PESTAÑA
+══════════════════════════════════════════════════════════════ */
+function closeInvoice() {
+  currentInvoiceId = null;
+  document.getElementById('editorWrap').style.display = 'none';
+  document.getElementById('emptyInv').style.display   = '';
+  renderInvList();
+}
+function closeClient() {
+  currentClientId = null;
+  document.getElementById('clForm').style.display   = 'none';
+  document.getElementById('emptyClient').style.display = '';
+  renderClientList();
+}
+function closeCategoria() {
+  currentCatId = null;
+  renderCartaCatList();
+  renderCarta();
+}
 /* ══════════════════════════════════════════════════════════════
   MODAL CONFIRM
 ══════════════════════════════════════════════════════════════ */
@@ -103,9 +128,12 @@ function renderInvList(filter = '') {
   const list = document.getElementById('invList');
   const f    = filter.toLowerCase();
   const filtered = invoices.filter(inv => {
-    const cn = inv.cliente ? inv.cliente.nombre.toLowerCase() : '';
-    return !f || cn.includes(f) || String(inv.numero).includes(f);
-  });
+  const nombre = (inv.clienteNombre || inv.cliente?.nombre || '').toLowerCase();
+  const numero = String(inv.numero);
+  const matchText  = !f || nombre.includes(f) || numero.includes(f);
+  const matchEstado = !currentInvFilter || inv.estado === currentInvFilter;
+  return matchText && matchEstado;
+});
 
   if (!filtered.length) {
     list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-4);font-size:.83rem">Sin resultados</div>';
@@ -201,6 +229,17 @@ function openInvoice(id) {
     document.getElementById('fromCity').value  = [empresa.cp, empresa.ciudad].filter(Boolean).join(' ');
     document.getElementById('fromPhone').value = empresa.telefono  || '';
     document.getElementById('fromEmail').value = empresa.email     || '';
+  }
+  // Logo en factura
+  const invLogo = document.getElementById('invLogo');
+  const invBrandText = document.getElementById('invBrandText');
+  if (empresa.logo) {
+    invLogo.src = empresa.logo;
+    invLogo.style.display = '';
+    invBrandText.style.display = 'none';
+  } else {
+    invLogo.style.display = 'none';
+    invBrandText.style.display = '';
   }
 
   // Fechas
@@ -471,14 +510,20 @@ function addRowFromItem(it, editable = true) {
         ${tipo === 'food' ? '🍽 Comida' : '🥤 Bebida'}
       </span>
     </td>
-    <td><input class="ti ti-inv ti-desc" value="${escHtml(it.descripcion || it.menuItem?.nombre || '')}" placeholder="Descripción..." ${dis} oninput="recalc();sc()"></td>
-    <td><input class="ti ti-inv ti-qty" type="number" min="1" value="${it.cantidad || 1}" ${dis} oninput="recalc();sc()"></td>
-    <td><input class="ti ti-inv ti-price" type="number" min="0" step="0.01" value="${it.precio || 0}" ${dis} oninput="recalc();sc()"></td>
+    <td><textarea class="ti ti-inv ti-desc" placeholder="Descripción..." readonly oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'">${escHtml(it.descripcion || it.menuItem?.nombre || '')}</textarea></td>
+    <td><input class="ti ti-inv ti-qty" type="number" min="1" value="${it.cantidad || 1}" readonly></td>
+    <td><input class="ti ti-inv ti-price" type="number" min="0" step="0.01" value="${it.precio || 0}" readonly></td>
     <td class="td-r base-cell">0,00 €</td>
     <td class="td-c">${iva}%</td>
     <td>${editable ? '<button class="del-row" onclick="this.closest(\'tr\').remove();recalc();sc()">✕</button>' : ''}</td>
   `;
   tbody.appendChild(tr);
+  // Ajustar altura del textarea al cargar
+  const textarea = tr.querySelector('.ti-desc');
+  if (textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
 }
 
 function toggleRowType(pill) {
@@ -598,16 +643,15 @@ function clearClientSearch() {
   if (inv) inv.clienteId = null;
   sc();
 }
-
 document.addEventListener('click', e => {
   if (!e.target.closest('#clientSearch') && !e.target.closest('#clientDropdown')) {
     document.getElementById('clientDropdown').style.display = 'none';
   }
 });
 // imprimir facura
-async function doPrint()   { 
-  await window.api.printDirect();
-  showToast('✅ Enviado a impresora');
+async function doPrint() {
+  const result = await window.api.printPreview();
+  if (!result?.success) showToast('❌ Error al generar vista previa', true);
 }
 // guardar PDF
 async function doSavePDF() {
@@ -760,9 +804,27 @@ async function deleteClient() {
   });
 }
 
-function useClientInInvoice() {
+async function useClientInInvoice() {
   showPage('facturas');
-  if (currentClientId) selectClientInInvoice(currentClientId);
+  // Si ya hay un borrador abierto, asigna el cliente
+  const invActual = invoices.find(i => i.id === currentInvoiceId);
+  if (invActual && invActual.estado === 'borrador') {
+    if (currentClientId) selectClientInInvoice(currentClientId);
+    return;
+  }
+
+  // Si no hay borrador abierto, crea una factura nueva con ese cliente
+  try {
+    const created = await window.api.facturas.create({});
+    invoices.unshift(created);
+    currentInvoiceId = created.id;
+    openInvoice(created.id);
+    renderInvList();
+    if (currentClientId) selectClientInInvoice(currentClientId);
+    showToast('✅ Nueva factura creada con el cliente');
+  } catch (err) {
+    showToast('❌ Error al crear factura', true);
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -984,6 +1046,19 @@ function loadEmpresaForm() {
   document.getElementById('e_iban').value    = empresa.iban      || '';
   document.getElementById('e_irpf').value    = String(empresa.irpf ?? 15);
   document.getElementById('e_prefijo').value = empresa.prefijo   || '';
+  
+  const navLogo = document.getElementById('navLogo');
+  const navEmoji = document.getElementById('navLogoEmoji');
+
+  console.log('logo:', empresa.logo ? 'existe' : 'no existe');
+  if (empresa.logo) {
+      navLogo.src = empresa.logo;
+      navLogo.style.display = '';
+      navEmoji.style.display = 'none';
+  } else {
+      navLogo.style.display = 'none';
+      navEmoji.style.display = '';
+  }
 
   if (empresa.nombre) {
     const parts = empresa.nombre.split(' ');
@@ -991,6 +1066,8 @@ function loadEmpresaForm() {
     document.getElementById('pBrandName').innerHTML  = `${escHtml(parts.join(' '))} <em>${escHtml(last)}</em>`;
     document.getElementById('pBrandSub').textContent = [empresa.direccion, empresa.ciudad].filter(Boolean).join(' · ');
   }
+
+  renderLogoPreview();
 }
 // registrar empresa
 async function saveEmpresa() {
@@ -1007,6 +1084,7 @@ async function saveEmpresa() {
     iban:      document.getElementById('e_iban').value.trim().replace(/[^A-Z0-9]/gi, '').toUpperCase() || null,
     irpf:      parseInt(document.getElementById('e_irpf').value) || 0,
     prefijo:   document.getElementById('e_prefijo').value.trim() || null,
+    logo: empresa.logo || null,
   };
   const errores = [];
   if (!data.nombre)    errores.push('e_nombre');
@@ -1045,110 +1123,6 @@ async function saveEmpresa() {
   }
 }
 
-/* ══════════════════════════════════════════════════════════════
-  AI IMPORT
-══════════════════════════════════════════════════════════════ */
-let aiImageBase64 = null;
-let aiResults     = [];
-
-function openAIImport() {
-  document.getElementById('aiOverlay').classList.add('open');
-}
-
-function pickCartaImage() {
-  const input  = document.createElement('input');
-  input.type   = 'file';
-  input.accept = 'image/*';
-  input.onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      aiImageBase64 = ev.target.result.split(',')[1];
-      document.getElementById('aiPreview').src           = ev.target.result;
-      document.getElementById('aiPreview').style.display = '';
-      document.getElementById('aiAnalyzeBtn').disabled   = false;
-      document.getElementById('aiNote').textContent      = file.name;
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
-}
-
-async function analyzeCartaImage() {
-  const apiKey = document.getElementById('aiApiKey').value.trim();
-  if (!apiKey || !aiImageBase64) return;
-
-  document.getElementById('aiIndicator').style.display = 'flex';
-  document.getElementById('aiAnalyzeBtn').disabled     = true;
-
-  try {
-    const res  = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1024,
-        messages: [{ role: 'user', content: [
-          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: aiImageBase64 } },
-          { type: 'text', text: 'Extrae todos los platos/bebidas con sus precios de esta carta. Responde SOLO con JSON sin markdown: [{"nombre":"...","precio":0.00,"tipo":"COMIDA|BEBIDA"}]' }
-        ]}]
-      })
-    });
-    const data = await res.json();
-    const text = data.content?.[0]?.text || '[]';
-    aiResults  = JSON.parse(text.replace(/```json|```/g,'').trim());
-
-    document.getElementById('aiResultCount').textContent   = aiResults.length;
-    document.getElementById('aiResultsWrap').style.display = '';
-    document.getElementById('aiImportBtn').style.display   = '';
-    document.getElementById('aiResultList').innerHTML = aiResults.map((it, i) => `
-      <div class="ai-result-item">
-        <input value="${escHtml(it.nombre)}" oninput="aiResults[${i}].nombre=this.value">
-        <input class="ai-price" type="number" step="0.01" value="${it.precio}" oninput="aiResults[${i}].precio=parseFloat(this.value)">
-        <button class="ai-type-toggle ai-tt-${it.tipo==='COMIDA'?'food':'drink'}" onclick="toggleAIType(${i},this)">${it.tipo==='COMIDA'?'🍽 Comida':'🥤 Bebida'}</button>
-        <button class="ai-remove" onclick="aiResults.splice(${i},1);renderAIList()">✕</button>
-      </div>`).join('');
-  } catch (err) {
-    showToast('❌ Error al analizar imagen', true);
-    console.error(err);
-  } finally {
-    document.getElementById('aiIndicator').style.display = 'none';
-    document.getElementById('aiAnalyzeBtn').disabled     = false;
-  }
-}
-
-function toggleAIType(i, btn) {
-  aiResults[i].tipo = aiResults[i].tipo === 'COMIDA' ? 'BEBIDA' : 'COMIDA';
-  const isFood      = aiResults[i].tipo === 'COMIDA';
-  btn.className     = `ai-type-toggle ai-tt-${isFood?'food':'drink'}`;
-  btn.textContent   = isFood ? '🍽 Comida' : '🥤 Bebida';
-}
-
-function renderAIList() {
-  document.getElementById('aiResultCount').textContent = aiResults.length;
-}
-
-async function importAIResults() {
-  try {
-    const cats = await window.api.categorias.getAll();
-    for (const it of aiResults) {
-      let cat = cats.find(c => c.tipo === it.tipo);
-      if (!cat) {
-        cat = await window.api.categorias.create({ nombre: it.tipo === 'COMIDA' ? 'Comida' : 'Bebidas', tipo: it.tipo });
-        cats.push(cat);
-      }
-      const created = await window.api.menu.create({ nombre: it.nombre, precio: it.precio, categoriaId: cat.id, disponible: true });
-      cartaItems.push(created);
-    }
-    renderCarta();
-    closeOverlay('aiOverlay');
-    showToast(`✅ ${aiResults.length} items importados`);
-  } catch (err) {
-    showToast('❌ Error al importar', true);
-    console.error(err);
-  }
-}
 
 /* ══════════════════════════════════════════════════════════════
   Exportar Excel de los clientes
@@ -1291,6 +1265,50 @@ function escHtml(str) {
   return String(str || '')
     .replace(/&/g,'&amp;').replace(/</g,'&lt;')
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ══════════════════════════════════════════════════════════════
+  LOGO DE LA EMPRESA
+══════════════════════════════════════════════════════════════ */
+function pickLogo() {
+  const input  = document.createElement('input');
+  input.type   = 'file';
+  input.accept = 'image/*';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      empresa.logo = ev.target.result; // base64 completo con prefijo data:image/...
+      renderLogoPreview();
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function removeLogo() {
+  empresa.logo = null;
+  renderLogoPreview();
+}
+
+function renderLogoPreview() {
+  const el = document.getElementById('logoPreview');
+  if (!el) return;
+  if (empresa.logo) {
+    el.innerHTML = `<img src="${empresa.logo}" alt="Logo empresa">`;
+  } else {
+    el.innerHTML = `<span style="color:var(--text-4);font-size:.8rem">Sin logo</span>`;
+  }
+}
+/* ══════════════════════════════════════════════════════════════
+  FILTRO DE FACTURAS
+══════════════════════════════════════════════════════════════ */
+function setInvFilter(estado, btn) {
+  currentInvFilter = estado;
+  document.querySelectorAll('.inv-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderInvList(document.querySelector('.search-wrap input')?.value || '');
 }
 
 

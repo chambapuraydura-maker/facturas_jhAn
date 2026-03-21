@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
 }
 
 datasource db {
@@ -35,6 +36,7 @@ model Empresa {
   iban      String?
   irpf      Int       @default(15)
   prefijo   String?
+  logo String?
   createdAt DateTime  @default(now())
   facturas  Factura[]
 }
