@@ -2,12 +2,13 @@
   "name": "facturas_jhan",
   "version": "1.0.0",
   "description": "",
-  "main": "electron-entry.js",
+  "main": "electron-entry-pro.js",
   "type": "commonjs",
   "scripts": {
     "dev": "tsc src/preload/preload.ts --outDir dist --module commonjs --target es2020 --esModuleInterop && electronmon .",
     "build": "tsc",
-    "test:dev": "tsx scripts/test.ts"
+    "test:dev": "tsx scripts/test.ts",
+    "dist": "tsc && electron-builder build --win"
   },
   "electronmon": {
     "patterns": [
@@ -32,17 +33,64 @@
   "homepage": "https://github.com/chambapuraydura-maker/facturas_jhAn#readme",
   "dependencies": {
     "@prisma/client": "^6.19.2",
-    "electron": "^40.6.1",
+    "dotenv": "^17.3.1",
     "exceljs": "^4.4.0",
-    "prisma": "^6.19.2",
-    "xlsx": "^0.18.5"
+    "prisma": "^6.19.2"
   },
   "devDependencies": {
     "@types/node": "^25.3.3",
+    "electron": "^40.6.1",
     "electron-builder": "^26.8.1",
     "electronmon": "^2.0.4",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
+  },
+  "build": {
+    "appId": "com.facturador.jhan",
+    "productName": "Facturador Pro",
+    "directories": {
+      "output": "FacturadorProInstaller"
+    },
+    "files": [
+      "dist/**/*",
+      "!dist/**/*.map",
+      "src/index.html",
+      "src/app.js",
+      "src/style/style.css",
+      "electron-entry-pro.js",
+      "node_modules/**/*",
+      "node_modules/.prisma/**/*",
+      "prisma/**/*",
+      ".env",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules/.prisma/client",
+        "to": "node_modules/.prisma/client"
+      },
+      {
+        "from": "node_modules/@prisma/client",
+        "to": "node_modules/@prisma/client"
+      }
+    ],
+    "asarUnpack": [
+      "node_modules/.prisma/**/*",
+      "node_modules/@prisma/client/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icon/logo.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerLanguages": [
+        "es_ES"
+      ],
+      "language": "3082",
+      "installerSidebar": "icon/fondo.bmp"
+    }
   }
 }

@@ -37,4 +37,5 @@ electron_1.contextBridge.exposeInMainWorld('api', {
     exportExcel: (filename, buffer) => electron_1.ipcRenderer.invoke('export:excel', filename, buffer),
     printPDF: (filename) => electron_1.ipcRenderer.invoke('print:pdf', filename),
     printDirect: () => electron_1.ipcRenderer.invoke('print:direct'),
+    printPreview: () => electron_1.ipcRenderer.invoke('print:preview'),
 });

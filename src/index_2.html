@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>El Fogon de la Tia Rosa</title>
+<title>Facturador Restaurante Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style/style.css">
 </head>
@@ -12,7 +12,7 @@
 <!-- LOADING -->
 <div id="loadScreen">
   <div class="spin"></div>
-  <div class="ls-logo">El <em>Fogon</em> de la Tia Rosa</div>
+  <div class="ls-logo">Factura<em>dor</em> Pro</div>
   <div class="ls-sub">Cargando restaurante...</div>
 </div>
 
@@ -20,12 +20,8 @@
 
   <!-- ── TOP NAV ── -->
   <nav class="topnav">
-    <div class="logo">
-      <img src="" id="navLogo" style="height:32px;width:32px;object-fit:contain;border-radius:4px;display:none;"> 
-      <span id="navLogoEmoji" style="font-size:1.2rem">🍽</span>
-      El <em>Fogon</em> de la Tia Rosa
-    </div>
-    <div class="nav-tabs">  
+    <div class="logo">🍽 Factura<em>dor</em> Pro</div>
+    <div class="nav-tabs">
       <button class="nav-tab active" onclick="showPage('facturas')" id="tab-facturas"><span class="tab-icon">🧾</span> Facturas</button>
       <button class="nav-tab" onclick="showPage('clientes')" id="tab-clientes"><span class="tab-icon">👥</span> Clientes</button>
       <button class="nav-tab" onclick="showPage('carta')" id="tab-carta"><span class="tab-icon">📋</span> Mi Carta</button>
@@ -49,12 +45,6 @@
           </div>
           <div class="search-wrap">
             <input type="text" placeholder="Buscar cliente o nº..." oninput="filterInv(this.value)">
-          </div>
-          <div class="inv-filter-bar">
-            <button class="inv-filter active" onclick="setInvFilter('', this)">Todas</button>
-            <button class="inv-filter" onclick="setInvFilter('borrador', this)">Borrador</button>
-            <button class="inv-filter" onclick="setInvFilter('pendiente', this)">Pendiente</button>
-            <button class="inv-filter" onclick="setInvFilter('pagada', this)">Pagada</button>
           </div>
         </div>
         <div class="f-list-wrap" id="invList"></div>
@@ -82,7 +72,6 @@
             </select>
             <button class="btn btn-ghost btn-sm" onclick="dupInvoice()">📋 Duplicar</button>
             <div class="tb-sep"></div>
-            <button class="btn btn-ghost btn-sm" onclick="closeInvoice()">✕ Cerrar</button>
             <button class="btn btn-blue btn-sm" onclick="doPrint()">🖨 Imprimir</button>
             <button class="btn btn-green btn-sm" onclick="doSavePDF()">💾 Guardar PDF</button>
             <button class="btn btn-red btn-sm" onclick="delInvoice()">🗑 Eliminar</button>
@@ -116,12 +105,9 @@
           <!-- PAPER -->
           <div class="inv-paper" id="invPaper">
             <div class="p-head">
-              <div class="p-brand-logo-wrap">
-                <img id="invLogo" src="" alt="Logo" style="display:none;max-height:70px;max-width:200px;object-fit:contain;">
-                <div id="invBrandText">
-                  <div class="p-brand-name" id="pBrandName">Mi <em>Restaurante</em></div>
-                  <div class="p-brand-sub" id="pBrandSub"></div>
-                </div>
+              <div>
+                <div class="p-brand-name" id="pBrandName">Mi <em>Restaurante</em></div>
+                <div class="p-brand-sub" id="pBrandSub"></div>
               </div>
               <div class="p-inv-title">
                 <div class="p-inv-word">FACTURA</div>
@@ -234,7 +220,6 @@
         <div class="cl-sb-top">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.1rem">Clientes</h3>
-            <button class="btn btn-ghost btn-xs" onclick="exportClientesExcel()">📥 Exportar Excel</button>
             <button class="btn btn-accent btn-sm" onclick="newClient()">＋ Nuevo</button>
           </div>
           <div class="search-wrap">
@@ -258,7 +243,6 @@
                 <div class="cl-card-sub" id="clCardSub">Rellena los datos del cliente</div>
               </div>
               <div style="display:flex;gap:8px">
-                <button class="btn btn-ghost btn-sm" onclick="closeClient()">✕ Cerrar</button>
                 <button class="btn btn-green btn-sm" onclick="saveClient()">💾 Guardar</button>
                 <button class="btn btn-red btn-sm" onclick="deleteClient()">🗑 Eliminar</button>
               </div>
@@ -271,7 +255,7 @@
             <div class="form-row cols-2">
               <div class="form-group">
                 <label class="inp-label">Nombre / Razón Social *</label>
-                <input class="inp" id="cl_nombre" placeholder="Empresa o nombre" oninput="this.value=this.value.toUpperCase()">
+                <input class="inp" id="cl_nombre" placeholder="Empresa o nombre" oninput="this.value=this.value.replace(/[^A-Z0-9]/gi,'').toUpperCase()">
               </div>
               <div class="form-group">
                 <label class="inp-label">NIF / CIF</label>
@@ -334,7 +318,9 @@
             <h2>📋 Mi Carta</h2>
             <p>Gestiona productos por categoría.</p>
           </div>
-          <button class="btn btn-ghost btn-sm" onclick="closeCategoria()">✕ Cerrar</button>
+          <div class="carta-topbar-btns">
+            <button class="btn btn-ghost btn-sm" onclick="openAIImport()">🤖 Importar con IA</button>
+          </div>
         </div>
         <div class="carta-body" id="cartaBody"></div>
       </div>
@@ -396,7 +382,7 @@
         <div class="form-row cols-2">
           <div class="form-group">
             <label class="inp-label">Nombre / Razón Social</label>
-            <input class="inp" id="e_nombre" placeholder="Mi Restaurante S.L." oninput="this.value=this.value.toUpperCase()"
+            <input class="inp" id="e_nombre" placeholder="Mi Restaurante S.L." oninput="this.value=this.value.toUpperCase()">
             ></div>
           <div class="form-group">
             <label class="inp-label">NIF / CIF</label>
@@ -440,17 +426,6 @@
           </div>
           <div class="form-group"><label class="inp-label">Prefijo factura (ej: 2025-)</label><input class="inp" id="e_prefijo" placeholder="2025-"></div>
         </div>
-        <!-- Logo empresa -->
-        <div class="sec-title"><span>🖼</span> Logo</div>
-        <div class="logo-upload-wrap">
-          <div class="logo-preview" id="logoPreview">
-            <span style="color:var(--text-4);font-size:.8rem">Sin logo</span>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <button class="btn btn-ghost btn-sm" onclick="pickLogo()">📁 Seleccionar imagen</button>
-            <button class="btn btn-ghost btn-sm" onclick="removeLogo()">🗑 Eliminar logo</button>
-          </div>
-        </div>
         <div style="display:flex;gap:10px;margin-top:10px">
           <button class="btn btn-accent" onclick="saveEmpresa()">💾 Guardar Datos</button>
         </div>
@@ -473,6 +448,45 @@
   </div>
 </div>
 
+<!-- AI IMPORT MODAL -->
+<div class="overlay" id="aiOverlay">
+  <div class="modal" style="width:560px;max-width:97vw">
+    <h3>🤖 Importar Carta con IA</h3>
+    <p class="m-sub">Sube una foto de tu carta y la IA extraerá los platos y precios. Después puedes editar o eliminar cada uno.</p>
+
+    <div style="margin-bottom:14px">
+      <div class="ai-import-bar" style="margin-bottom:8px">
+        <button class="btn btn-ghost btn-sm" onclick="pickCartaImage()">📸 Elegir imagen de carta</button>
+        <div class="ai-indicator" id="aiIndicator">
+          <div class="ai-dot"></div>
+          <span>Analizando imagen...</span>
+        </div>
+        <span class="ai-note" id="aiNote">Formatos: JPG, PNG, WEBP</span>
+      </div>
+      <img id="aiPreview" class="ai-image-preview" alt="Preview carta">
+    </div>
+
+    <!-- API key field -->
+    <div class="form-group" id="apiKeyGroup">
+      <label class="inp-label">🔑 API Key de Anthropic (para analizar la imagen)</label>
+      <input class="inp" id="aiApiKey" type="password" placeholder="sk-ant-...">
+      <div style="font-size:.72rem;color:var(--text-4);margin-top:4px">Tu clave se usa solo localmente y nunca se envía a ningún servidor propio.</div>
+    </div>
+
+    <div id="aiResultsWrap" style="display:none">
+      <div style="font-size:.78rem;color:var(--text-2);margin-bottom:8px">
+        ✅ <strong id="aiResultCount">0</strong> productos detectados — edita o elimina lo que no necesites:
+      </div>
+      <div class="ai-result-list" id="aiResultList"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeOverlay('aiOverlay')">Cancelar</button>
+      <button class="btn btn-accent" id="aiAnalyzeBtn" onclick="analyzeCartaImage()" disabled>🔍 Analizar</button>
+      <button class="btn btn-green" id="aiImportBtn" onclick="importAIResults()" style="display:none">✅ Importar a Carta</button>
+    </div>
+  </div>
+</div>
 
 <!-- TOAST -->
 <div id="toast"></div>

@@ -37,4 +37,5 @@ contextBridge.exposeInMainWorld('api', {
     exportExcel: (filename: string, buffer: number[]) => ipcRenderer.invoke('export:excel', filename, buffer),
     printPDF: (filename: string) => ipcRenderer.invoke('print:pdf', filename),
     printDirect: () => ipcRenderer.invoke('print:direct'),
+    printPreview: () => ipcRenderer.invoke('print:preview'),
 });

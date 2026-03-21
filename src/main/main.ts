@@ -1,4 +1,5 @@
-import { dialog, ipcMain, app, BrowserWindow } from 'electron';
+import { dialog, ipcMain, app, BrowserWindow, shell } from 'electron';
+import dotenv from 'dotenv';
 import path from 'path';
 import ExcelJS from 'exceljs';
 import fs from 'fs';
@@ -8,12 +9,16 @@ import './ipc/categorias';
 import './ipc/menu';
 import './ipc/facturas';
 
+
+dotenv.config({ path: path.join(app.getAppPath(), '.env') });
+
 function createWindow() {
     const win = new BrowserWindow({
         width: 1200,
         height: 800,
+        title: 'El Fogon de la Tia Rosa',
         webPreferences: {
-            preload: path.join(app.getAppPath(), 'dist/preload.js'),
+            preload: path.join(app.getAppPath(), 'dist/preload/preload.js'),
             contextIsolation: true,
             nodeIntegration: false,
         }
@@ -21,7 +26,7 @@ function createWindow() {
     });
     win.removeMenu();
 
-    win.loadFile(path.join(__dirname, '../index.html'));
+    win.loadFile(path.join(app.getAppPath(), 'src/index.html'));
     //win.webContents.openDevTools();
 }
 // generar EXCEL de los clientes
@@ -71,6 +76,7 @@ ipcMain.handle('print:pdf', async (event, filename: string) => {
         defaultPath: path.join(app.getPath('downloads'), filename),
         filters: [{ name: 'PDF', extensions: ['pdf'] }],
     });
+    
     if (canceled || !filePath) return { success: false };
 
     const win = BrowserWindow.fromWebContents(event.sender);
@@ -89,6 +95,31 @@ ipcMain.handle('print:direct', async (event) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (!win) return;
     win.webContents.print({ silent: false, printBackground: true });
+});
+ipcMain.handle('print:preview', async (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (!win) return { success: false };
+
+    // Ocultar elementos antes de generar PDF
+    await win.webContents.executeJavaScript(`
+        document.body.style.background = 'white';
+    `);
+
+    const data = await win.webContents.printToPDF({
+        printBackground: true,
+        pageSize: 'A4',
+    });
+
+    // Restaurar elementos
+    await win.webContents.executeJavaScript(`
+        document.querySelectorAll('.overlay').forEach(el => el.style.display = '');
+    `);
+
+    const tmpPath = path.join(app.getPath('temp'), `factura_preview_${Date.now()}.pdf`);
+    fs.writeFileSync(tmpPath, data);
+    await shell.openPath(tmpPath);
+
+    return { success: true };
 });
 
 console.log('__dirname:', __dirname);
